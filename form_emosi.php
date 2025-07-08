@@ -1,0 +1,192 @@
+<?php
+// form_emosi.php hasil konversi dari form_emosi.html
+include 'session/proteksi.php';
+?>
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Refleksi Emosi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fadeInUp {
+            animation: fadeInUp 1s;
+        }
+
+        .fadeInCard {
+            animation: fadeInCard 1.1s;
+        }
+
+        .glass-navbar {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.07);
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 9999px;
+            opacity: 0.22;
+            filter: blur(2px);
+            z-index: 0;
+            animation: float 7s ease-in-out infinite alternate;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInCard {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(0px);
+            }
+
+            to {
+                transform: translateY(-30px);
+            }
+        }
+    </style>
+</head>
+
+
+<body class="min-h-screen bg-gradient-to-br from-blue-200 via-blue-100 to-blue-300 relative">
+    <!-- Floating shapes background -->
+    <div class="fixed inset-0 -z-10">
+        <div class="floating-shape bg-blue-400 w-60 h-60 top-10 left-10"></div>
+        <div class="floating-shape bg-purple-300 w-40 h-40 bottom-20 right-20"></div>
+        <div class="floating-shape bg-cyan-300 w-32 h-32 top-1/2 left-1/2"></div>
+    </div>
+
+    <!-- Navbar glassmorphism -->
+    <nav class="flex items-center justify-between glass-navbar text-white px-6 py-4 shadow-lg relative animate-fadeInUp z-20" style="background:rgba(30,58,138,0.85);box-shadow:0 8px 32px 0 rgba(31,38,135,0.15);backdrop-filter:blur(8px);border-bottom:1.5px solid rgba(59,130,246,0.10);">
+        <div class="flex items-center gap-3 font-bold text-lg">
+            <img src="img/demote_logos.png" alt="Logo Demote" class="h-10 w-auto rounded-md bg-white shadow transition-transform duration-300 hover:scale-110" onerror="this.src='https://placehold.co/60x38?text=Logo'">
+            <span class="tracking-wide">Demote</span>
+        </div>
+        <div class="flex gap-4">
+            <a href="#" onclick="sessionStorage.clear();location.href='index.html'" class="nav-underline hover:text-red-400 font-semibold transition-colors duration-300">Logout</a>
+        </div>
+        <!-- Floating shapes for navbar -->
+        <div class="floating-shape" style="top:-30px;left:10vw;">
+            <svg width="60" height="60">
+                <circle cx="30" cy="30" r="28" fill="#4f8cff" />
+            </svg>
+        </div>
+        <div class="floating-shape" style="top:10px;right:8vw;animation-delay:2s;">
+            <svg width="36" height="36">
+                <rect x="0" y="0" width="36" height="36" rx="12" fill="#2c3e50" />
+            </svg>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="flex flex-col items-center justify-center min-h-[70vh] pt-8 pb-0 fadeInUp">
+        <div class="w-full max-w-xl mx-auto mt-6 mb-2">
+            <div class="bg-white/90 rounded-3xl shadow-xl p-8 fadeInCard relative z-10 border-2 border-blue-900/60" style="box-shadow: 0 8px 32px 0 rgba(30,58,138,0.10);">
+                <h2 class="text-2xl font-bold text-blue-900 mb-1 text-center">Refleksi Emosi Diskusi</h2>
+                <p class="text-center text-blue-700 mb-4">Bagaimana perasaan Anda setelah diskusi ini? Tulis dengan jujur.</p>
+                <textarea id="inputRefleksi" placeholder="Contoh: Saya merasa senang karena diskusi berjalan lancar..." class="w-full h-36 px-4 py-3 rounded-xl border-2 border-blue-900/30 focus:ring-2 focus:ring-blue-800 outline-none transition text-blue-900 bg-blue-50/60 mb-2 resize-y"></textarea>
+                <button onclick="kirimRefleksi()" class="mt-3 px-7 py-2 rounded-lg bg-blue-800 text-white font-semibold shadow hover:bg-blue-900 active:scale-95 transition float-right">Kirim Refleksi</button>
+                <div class="clear-both"></div>
+                <div class="text-center mt-8 text-blue-900/60 text-sm">Demote App</div>
+            </div>
+        </div>
+        <!-- SVG Ilustrasi bawah -->
+        <div class="w-full max-w-xl mx-auto -mt-6 mb-8 z-0">
+            <svg viewBox="0 0 600 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-20">
+                <path d="M0 60 Q150 0 300 60 T600 60 V80 H0Z" fill="#1e3a8a" fill-opacity="0.18" />
+                <path d="M0 70 Q150 20 300 70 T600 70 V80 H0Z" fill="#4f8cff" fill-opacity="0.13" />
+            </svg>
+        </div>
+    </main>
+
+    <script>
+        const userId = sessionStorage.getItem("user_id");
+        const diskusiId = sessionStorage.getItem("diskusi_id");
+
+
+        async function deteksiEmosi(teks) {
+            try {
+                const res = await fetch("api/deteksi_emosi.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        teks
+                    })
+                });
+                const data = await res.json();
+                if (data.success && data.label) {
+                    return data.label;
+                } else {
+                    // fallback jika gagal deteksi
+                    return "netral";
+                }
+            } catch (e) {
+                return "netral";
+            }
+        }
+
+        async function kirimRefleksi() {
+            const isi = document.getElementById("inputRefleksi").value.trim();
+            if (!isi || !userId || !diskusiId) {
+                alert("Mohon lengkapi semua isian terlebih dahulu.");
+                return;
+            }
+
+            // Deteksi emosi via backend Gemini
+            const label = await deteksiEmosi(isi);
+
+            fetch("api/simpan_form.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        user_id: parseInt(userId),
+                        diskusi_id: parseInt(diskusiId),
+                        isi: isi,
+                        label_emosi: label
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        alert("Terima kasih atas refleksi Anda!");
+                        sessionStorage.removeItem("diskusi_id");
+                        window.location.href = "dashboard_mhs.php";
+                    } else {
+                        alert("Gagal menyimpan refleksi: " + data.message);
+                    }
+                })
+                .catch(() => alert("Gagal menghubungi server."));
+        }
+    </script>
+
+</body>
+
+</html>

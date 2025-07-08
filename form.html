@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Emosi - Demote</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: linear-gradient(120deg, #4f8cff 0%, #2c3e50 100%);
+      min-height: 100vh;
+    }
+    .navbar {
+      background: rgba(44,62,80,0.98);
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+    }
+    .navbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .navbar img {
+      height: 38px;
+      width: auto;
+      vertical-align: middle;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(44,62,80,0.10);
+    }
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 1.2rem;
+      font-weight: bold;
+      transition: color 0.2s;
+    }
+    .navbar a:hover {
+      color: #4f8cff;
+    }
+    .container {
+      max-width: 700px;
+      margin: 3rem auto;
+      padding: 2rem;
+    }
+    .form-box {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(44,62,80,0.10);
+    }
+    label {
+      display: block;
+      margin-top: 1em;
+      font-weight: bold;
+    }
+    textarea {
+      width: 100%;
+      padding: 0.7em;
+      margin-top: 0.5em;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 1.5em;
+      padding: 0.7em 1.5em;
+      background: linear-gradient(90deg, #4f8cff 60%, #2c3e50 100%);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #2c3e50 0%, #4f8cff 100%);
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #ddd;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="brand">
+      <img src="img/demote_logos.png" alt="Logo Demote" onerror="this.src='https://placehold.co/60x38?text=Logo'">
+      Demote - Form Emosi
+    </div>
+    <div>
+      <a href="dashboard_mhs.php">Dashboard</a>
+      <a href="api/logout.php">Logout</a>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="form-box">
+      <form id="formEmosi">
+        <label for="perasaan">Apa yang Anda rasakan selama diskusi?</label>
+        <textarea id="perasaan" rows="5" placeholder="Tuliskan perasaan Anda di sini..."></textarea>
+        <button type="submit">Kirim</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Demote - Form Emosi Mahasiswa
+  </footer>
+
+  <script>
+    function deteksiEmosi(teks) {
+      teks = teks.toLowerCase();
+      const positif = ['senang', 'puas', 'berhasil', 'bagus', 'baik'];
+      const negatif = ['marah', 'kesal', 'buruk', 'gagal', 'bingung', 'pusing', 'capek'];
+
+      for (let kata of positif) if (teks.includes(kata)) return 'positif';
+      for (let kata of negatif) if (teks.includes(kata)) return 'negatif';
+      return 'netral';
+    }
+
+    document.getElementById("formEmosi").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const isi = document.getElementById("perasaan").value.trim();
+      if (!isi) return alert("Isi perasaan tidak boleh kosong!");
+
+      const label = deteksiEmosi(isi);
+      console.log("Input:", isi);
+      console.log("Label emosi:", label);
+
+      fetch("api/simpan_form.php", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    isi: isi,
+    label: label
+    // diskusi_id dan user_id bisa di-handle di backend lewat $_SESSION
+  })
+})
+.then(res => res.json())
+.then(data => {
+  console.log("Respon dari server:", data);
+  alert(data.message);
+  if (data.status === 'success') {
+    document.getElementById("perasaan").value = "";
+    window.location.href = "dashboard_mhs.php";
+  }
+})
+.catch(err => {
+  console.error("Gagal menghubungi server:", err);
+  alert("Terjadi kesalahan saat mengirim data.");
+});
+    });
+  </script>
+</body>
+</html>

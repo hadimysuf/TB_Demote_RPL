@@ -1,0 +1,183 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+  header("Location: login.html");
+  exit;
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Emosi - Demote</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f8f9fa;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #ecf0f1;
+      padding: 1rem 2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav a {
+      text-decoration: none;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .logout-button {
+      background-color: #e74c3c;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    .card {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    .card h3 {
+      margin-top: 1rem;
+      color: #34495e;
+    }
+
+    .list-item {
+      padding: 0.5em;
+      margin-bottom: 0.5em;
+      background-color: #eef2f7;
+      border-left: 5px solid #0d6efd;
+    }
+
+    .chart-placeholder {
+      height: 250px;
+      background-color: #e1e1e1;
+      border: 2px dashed #aaa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #ddd;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Dashboard Emosi</h1>
+    <p>Ringkasan Emosi dan Aktivitas Diskusi Tim - Demote</p>
+  </header>
+
+  <nav>
+    <div class="nav-links">
+      <a href="dashboard.php">Dashboard</a>
+      <a href="diskusi.html">Diskusi</a>
+      <a href="form.html">Form Emosi</a>
+      <?php if ($_SESSION['role'] === 'dosen'): ?>
+        <a href="laporan.php">Laporan</a>
+      <?php endif; ?>
+      <a href="tim.html">Tim</a>
+    </div>
+    <a href="api/logout.php" class="logout-button">Logout</a>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h2>Statistik Emosi (Terbaru)</h2>
+      <div id="list-diskusi">
+        <h3>Statistik Emosi dari Diskusi</h3>
+      </div>
+      <div id="list-form">
+        <h3>Statistik Emosi dari Form</h3>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Grafik Emosi Tim</h2>
+      <div class="chart-placeholder">[ Grafik Tren Emosi Akan Ditampilkan ]</div>
+    </div>
+
+    <div class="card">
+      <h2>Refleksi Terbaru Mahasiswa</h2>
+      <div id="refleksi-terbaru">[Memuat... ]</div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Demote. Kolaborasi Mahasiswa Berbasis Emosi.
+  </footer>
+
+  <script>
+    fetch("api/get_dashboard.php")
+      .then(res => res.json())
+      .then(data => {
+        const listDiskusi = document.getElementById("list-diskusi");
+        const listForm = document.getElementById("list-form");
+        const refleksi = document.getElementById("refleksi-terbaru");
+
+        data.forEach((item, index) => {
+          const div = document.createElement("div");
+          div.className = "list-item";
+          div.textContent = `${item.sumber}: "${item.teks}" → ${item.label}`;
+
+          if (item.sumber === "Komentar") {
+            listDiskusi.appendChild(div);
+          } else if (item.sumber === "Form") {
+            listForm.appendChild(div);
+            if (index === 0) refleksi.textContent = `"${item.teks}" → ${item.label}`;
+          }
+        });
+      })
+      .catch(error => {
+        console.error("Gagal memuat data dashboard:", error);
+        document.getElementById("list-diskusi").textContent = "Gagal memuat data.";
+      });
+  </script>
+</body>
+
+</html>
