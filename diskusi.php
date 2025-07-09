@@ -295,7 +295,7 @@ include 'session/proteksi.php';
                                         sessionStorage.setItem("role", sess.role);
                                         sessionStorage.setItem("nama", sess.nama);
                                     }
-                                    window.location.href = "room.html";
+                                    window.location.href = "room.php";
                                 });
                         } else {
                             window.location.href = "room.php";

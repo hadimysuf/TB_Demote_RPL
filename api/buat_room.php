@@ -27,6 +27,12 @@ if (!$stmtTim->execute()) {
 $tim_id = $stmtTim->insert_id;
 $stmtTim->close();
 
+// Tambahkan host (dosen) sebagai anggota tim
+$stmtAnggota = $koneksi->prepare("INSERT INTO anggota_tim (user_id, tim_id) VALUES (?, ?)");
+$stmtAnggota->bind_param("ii", $host_id, $tim_id);
+$stmtAnggota->execute();
+$stmtAnggota->close();
+
 // Generate kode unik room
 function generateKode($length = 6)
 {

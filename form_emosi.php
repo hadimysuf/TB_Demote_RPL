@@ -1,6 +1,13 @@
 <?php
 // form_emosi.php hasil konversi dari form_emosi.html
 include 'session/proteksi.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'mahasiswa') {
+    header('Location: login.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -87,7 +94,7 @@ include 'session/proteksi.php';
             <span class="tracking-wide">Demote</span>
         </div>
         <div class="flex gap-4">
-            <a href="#" onclick="sessionStorage.clear();location.href='index.html'" class="nav-underline hover:text-red-400 font-semibold transition-colors duration-300">Logout</a>
+            <a href="#" onclick="sessionStorage.clear();location.href='index.php'" class="nav-underline hover:text-red-400 font-semibold transition-colors duration-300">Logout</a>
         </div>
         <!-- Floating shapes for navbar -->
         <div class="floating-shape" style="top:-30px;left:10vw;">
@@ -124,11 +131,28 @@ include 'session/proteksi.php';
     </main>
 
     <script>
+        // Jika user belum mengakhiri diskusi, redirect ke room
+        // Perbaikan: Pastikan hanya mahasiswa yang diarahkan ke form refleksi setelah akhiri diskusi
+        if (!sessionStorage.getItem("isi_refleksi")) {
+            // Cek role, jika dosen langsung ke dashboard, jika mahasiswa ke room
+            if (sessionStorage.getItem("role") === "mahasiswa") {
+                window.location.href = "room.php";
+            } else {
+                window.location.href = "dashboard_dosen.php";
+            }
+        }
         const userId = sessionStorage.getItem("user_id");
         const diskusiId = sessionStorage.getItem("diskusi_id");
 
 
         async function deteksiEmosi(teks) {
+            // Heuristik lokal fallback jika fetch gagal
+            const positif = [
+                'bahagia', 'senang', 'gembira', 'bangga', 'bersyukur', 'tenang', 'puas', 'semangat', 'tertarik', 'terinspirasi', 'percaya diri', 'cinta', 'peduli', 'terharu', 'takjub', 'optimis', 'antusias', 'aman', 'dihargai', 'diterima', 'berdaya', 'bersemangat', 'berharap', 'lega', 'sukses', 'nyaman', 'beruntung', 'terkoneksi', 'penuh harapan', 'termotivasi', 'alhamdulillah', 'syukur', 'lega', 'terpuaskan', 'terhibur', 'terinspirasi', 'berbahagia', 'merasa dihargai', 'merasa diterima', 'merasa berdaya', 'merasa bersemangat', 'merasa lega'
+            ];
+            const negatif = [
+                'sedih', 'kecewa', 'frustrasi', 'putus asa', 'malu', 'takut', 'khawatir', 'cemas', 'gelisah', 'marah', 'kesal', 'jengkel', 'iri', 'cemburu', 'tertekan', 'lelah', 'bosan', 'bingung', 'ragu', 'terluka', 'merasa gagal', 'tidak berdaya', 'minder', 'terasing', 'sakit hati', 'malas', 'panik', 'terhina', 'tersinggung', 'terintimidasi', 'terbebani', 'terabaikan', 'merasa bersalah', 'merasa ditolak', 'merasa tidak cukup', 'pusing', 'ga tau', 'ga jelas', 'ga paham', 'ga ngerti'
+            ];
             try {
                 const res = await fetch("api/deteksi_emosi.php", {
                     method: "POST",
@@ -144,9 +168,27 @@ include 'session/proteksi.php';
                     return data.label;
                 } else {
                     // fallback jika gagal deteksi
+                    let teksLower = teks.toLowerCase().replace(/\s+/g, ' ');
+                    for (const kata of positif) {
+                        const kataNorm = kata.toLowerCase().replace(/\s+/g, ' ');
+                        if (teksLower.includes(kataNorm)) return "positif";
+                    }
+                    for (const kata of negatif) {
+                        const kataNorm = kata.toLowerCase().replace(/\s+/g, ' ');
+                        if (teksLower.includes(kataNorm)) return "negatif";
+                    }
                     return "netral";
                 }
             } catch (e) {
+                let teksLower = teks.toLowerCase().replace(/\s+/g, ' ');
+                for (const kata of positif) {
+                    const kataNorm = kata.toLowerCase().replace(/\s+/g, ' ');
+                    if (teksLower.includes(kataNorm)) return "positif";
+                }
+                for (const kata of negatif) {
+                    const kataNorm = kata.toLowerCase().replace(/\s+/g, ' ');
+                    if (teksLower.includes(kataNorm)) return "negatif";
+                }
                 return "netral";
             }
         }
@@ -178,6 +220,7 @@ include 'session/proteksi.php';
                     if (data.status === "success") {
                         alert("Terima kasih atas refleksi Anda!");
                         sessionStorage.removeItem("diskusi_id");
+                        sessionStorage.removeItem("isi_refleksi");
                         window.location.href = "dashboard_mhs.php";
                     } else {
                         alert("Gagal menyimpan refleksi: " + data.message);

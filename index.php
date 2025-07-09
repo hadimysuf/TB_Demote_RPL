@@ -134,8 +134,8 @@
       <span class="tracking-wide">Demote</span>
     </div>
     <div class="flex gap-4">
-      <a href="login.html" class="nav-underline hover:text-blue-400 font-semibold transition-colors duration-300">Login</a>
-      <a href="register.html" class="nav-underline hover:text-blue-400 font-semibold transition-colors duration-300">Register</a>
+      <a href="login.php" class="nav-underline hover:text-blue-400 font-semibold transition-colors duration-300">Login</a>
+      <a href="register.php" class="nav-underline hover:text-blue-400 font-semibold transition-colors duration-300">Register</a>
     </div>
     <!-- Floating shapes for navbar -->
     <div class="floating-shape" style="top:-30px;left:10vw;">
@@ -172,7 +172,7 @@
     </svg>
     <h1 class="text-3xl md:text-4xl font-bold mb-2 z-10 relative animate-fadeInUp">Selamat Datang di Demote</h1>
     <p class="text-lg max-w-xl mx-auto mb-6 z-10 relative animate-fadeInUp">Platform kolaborasi diskusi dan refleksi emosi untuk mahasiswa & dosen. Pantau, analisis, dan tingkatkan kualitas diskusi serta pemahaman emosi secara modern dan terintegrasi.</p>
-    <a href="login.html" class="inline-block bg-gradient-to-r from-blue-500 to-blue-900 text-white font-bold rounded-md px-8 py-3 shadow-lg hover:from-blue-700 hover:to-blue-500 transition z-10 relative animate-fadeInUp animate-pulse-slow">Mulai Sekarang</a>
+    <a href="login.php" class="inline-block bg-gradient-to-r from-blue-500 to-blue-900 text-white font-bold rounded-md px-8 py-3 shadow-lg hover:from-blue-700 hover:to-blue-500 transition z-10 relative animate-fadeInUp animate-pulse-slow">Mulai Sekarang</a>
   </section>
   <div class="bg-white rounded-xl shadow-xl max-w-4xl mx-auto my-10 p-8">
     <h2 class="text-center mb-8 text-2xl font-bold text-blue-900 animate-fadeInUp">Fitur Utama Demote</h2>
@@ -227,7 +227,7 @@
       <li>Lihat rekap, statistik, dan export laporan sesuai kebutuhan.</li>
     </ol>
     <div class="text-center mt-8 animate-fadeInUp">
-      <a href="login.html" class="inline-block bg-gradient-to-r from-blue-500 to-blue-900 text-white font-bold rounded-md px-8 py-3 shadow-lg hover:from-blue-700 hover:to-blue-500 transition animate-pulse-slow">Login Sekarang</a>
+      <a href="login.php" class="inline-block bg-gradient-to-r from-blue-500 to-blue-900 text-white font-bold rounded-md px-8 py-3 shadow-lg hover:from-blue-700 hover:to-blue-500 transition animate-pulse-slow">Login Sekarang</a>
     </div>
   </div>
 </body>

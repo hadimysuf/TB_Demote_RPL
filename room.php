@@ -87,7 +87,7 @@ include 'session/proteksi.php';
             <span class="tracking-wide">Demote</span>
         </div>
         <div class="flex gap-4">
-            <a href="#" onclick="sessionStorage.clear();location.href='index.html'" class="nav-underline hover:text-red-400 font-semibold transition-colors duration-300">Logout</a>
+            <a href="#" onclick="sessionStorage.clear();location.href='login.php'" class="nav-underline hover:text-red-400 font-semibold transition-colors duration-300">Logout</a>
         </div>
         <!-- Floating shapes for navbar -->
         <div class="floating-shape" style="top:-30px;left:10vw;">
@@ -160,7 +160,7 @@ include 'session/proteksi.php';
                         location.reload();
                     } else {
                         alert("Session login tidak ditemukan. Silakan login ulang.");
-                        window.location.href = "index.html";
+                        window.location.href = "login.php";
                     }
                 });
         }
@@ -168,7 +168,7 @@ include 'session/proteksi.php';
         // Cek userId di awal, jika null redirect ke login
         if (!userId) {
             alert("Session login tidak ditemukan. Silakan login ulang.");
-            window.location.href = "index.html";
+            window.location.href = "login.php";
         }
 
         // ⛔ Jika role mahasiswa dan belum ada diskusi_id, ambil dari room_diskusi
@@ -223,15 +223,21 @@ include 'session/proteksi.php';
 
         // Deteksi emosi menggunakan heuristik lokal (tanpa API Gemini)
         function deteksiEmosi(teks) {
-            // Contoh heuristik sederhana: jika ada kata negatif/kata positif
-            const positif = ["senang", "bahagia", "gembira", "semangat", "hebat", "bagus", "mantap"];
-            const negatif = ["sedih", "marah", "kesal", "kecewa", "buruk", "jelek", "parah"];
-            const teksLower = teks.toLowerCase();
+            // Heuristik lokal diperluas agar konsisten dengan backend
+            const positif = [
+                'bahagia', 'senang', 'gembira', 'bangga', 'bersyukur', 'tenang', 'puas', 'semangat', 'tertarik', 'terinspirasi', 'percaya diri', 'cinta', 'peduli', 'terharu', 'takjub', 'optimis', 'antusias', 'aman', 'dihargai', 'diterima', 'berdaya', 'bersemangat', 'berharap', 'lega', 'sukses', 'nyaman', 'beruntung', 'terkoneksi', 'penuh harapan', 'termotivasi', 'alhamdulillah', 'syukur', 'lega', 'terpuaskan', 'terhibur', 'terinspirasi', 'berbahagia', 'merasa dihargai', 'merasa diterima', 'merasa berdaya', 'merasa bersemangat', 'merasa lega'
+            ];
+            const negatif = [
+                'sedih', 'kecewa', 'frustrasi', 'putus asa', 'malu', 'takut', 'khawatir', 'cemas', 'gelisah', 'marah', 'kesal', 'jengkel', 'iri', 'cemburu', 'tertekan', 'lelah', 'bosan', 'bingung', 'ragu', 'terluka', 'merasa gagal', 'tidak berdaya', 'minder', 'terasing', 'sakit hati', 'malas', 'panik', 'terhina', 'tersinggung', 'terintimidasi', 'terbebani', 'terabaikan', 'merasa bersalah', 'merasa ditolak', 'merasa tidak cukup', 'pusing', 'ga tau', 'ga jelas', 'ga paham', 'ga ngerti'
+            ];
+            let teksLower = teks.toLowerCase().replace(/\s+/g, ' ');
             for (const kata of positif) {
-                if (teksLower.includes(kata)) return "positif";
+                const kataNorm = kata.toLowerCase().replace(/\s+/g, ' ');
+                if (teksLower.includes(kataNorm)) return "positif";
             }
             for (const kata of negatif) {
-                if (teksLower.includes(kata)) return "negatif";
+                const kataNorm = kata.toLowerCase().replace(/\s+/g, ' ');
+                if (teksLower.includes(kataNorm)) return "negatif";
             }
             return "netral";
         }
@@ -276,7 +282,11 @@ include 'session/proteksi.php';
         function akhiriDiskusi() {
             if (confirm("Yakin ingin mengakhiri diskusi?")) {
                 if (role === "mahasiswa") {
-                    window.location.href = "form_emosi.php";
+                    // Simpan flag bahwa harus isi refleksi setelah diskusi
+                    sessionStorage.setItem("isi_refleksi", "1");
+                    setTimeout(function() {
+                        window.location.href = "form_emosi.php";
+                    }, 100);
                 } else {
                     sessionStorage.removeItem("diskusi_id");
                     window.location.href = "dashboard_dosen.php";

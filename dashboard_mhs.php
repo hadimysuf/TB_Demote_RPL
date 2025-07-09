@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'mahasiswa') {
-  header("Location: index.html");
+  header("Location: index.php");
   exit;
 }
 ?>
@@ -182,7 +182,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'mahasiswa') {
       <p class="text-blue-900/90 text-center animate-fadeInUp">Silakan pilih menu di bawah untuk memulai diskusi setelah login.</p>
       <!-- Quick Menu -->
       <div class="flex flex-col md:flex-row gap-4 w-full justify-center mt-2">
-        <a href="diskusi.html" class="flex-1 bg-gradient-to-r from-blue-500 to-blue-900 text-white font-bold rounded-lg px-6 py-4 shadow-lg hover:from-blue-700 hover:to-blue-500 transition hover:scale-105 animate-fadeInCard text-center flex flex-col items-center gap-2">
+        <a href="diskusi.php" class="flex-1 bg-gradient-to-r from-blue-500 to-blue-900 text-white font-bold rounded-lg px-6 py-4 shadow-lg hover:from-blue-700 hover:to-blue-500 transition hover:scale-105 animate-fadeInCard text-center flex flex-col items-center gap-2">
           <svg width="32" height="32" fill="none" viewBox="0 0 24 24">
             <path d="M7 8h10M7 12h6m-6 4h8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             <circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="2" />
@@ -190,14 +190,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'mahasiswa') {
           Mulai Diskusi
         </a>
       </div>
-      <!-- Statistik Ringkas (dummy, bisa diisi dinamis jika ada data) -->
+      <!-- Statistik Ringkas (dinamis) -->
       <div class="grid grid-cols-2 gap-4 w-full mt-4">
         <div class="bg-blue-50 rounded-lg shadow p-4 text-center animate-fadeInCard">
-          <div class="text-2xl font-bold text-blue-700">3</div>
+          <div id="diskusiAktif" class="text-2xl font-bold text-blue-700">...</div>
           <div class="text-blue-900/80 text-sm">Diskusi Aktif</div>
         </div>
         <div class="bg-blue-50 rounded-lg shadow p-4 text-center animate-fadeInCard" style="animation-delay:0.1s;">
-          <div class="text-2xl font-bold text-blue-700">2</div>
+          <div id="refleksiTerkirim" class="text-2xl font-bold text-blue-700">...</div>
           <div class="text-blue-900/80 text-sm">Refleksi Terkirim</div>
         </div>
       </div>
@@ -214,6 +214,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'mahasiswa') {
   <footer class="text-center py-4 text-blue-100 text-sm mt-8 animate-fadeInUp">
     &copy; 2025 Demote - Dashboard Mahasiswa
   </footer>
-</body>
 
+  <script>
+    // Ambil statistik dashboard dari backend
+    fetch('get_dashboard_mhs.php')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('diskusiAktif').textContent = data.diskusi_aktif ?? 0;
+        document.getElementById('refleksiTerkirim').textContent = data.refleksi_terkirim ?? 0;
+      })
+      .catch(() => {
+        document.getElementById('diskusiAktif').textContent = '-';
+        document.getElementById('refleksiTerkirim').textContent = '-';
+      });
+  </script>
+</body>
 </html>

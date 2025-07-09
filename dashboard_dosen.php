@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'dosen') {
-  header("Location: index.html");
+  header("Location: index.php");
   exit;
 }
 ?>
@@ -118,20 +118,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'dosen') {
         <h2 class="text-2xl font-bold text-blue-900 mb-1 text-center">Halo, <?= htmlspecialchars($_SESSION['nama']) ?>!</h2>
         <p class="text-center text-blue-700 mb-4">Anda login sebagai <strong>Dosen</strong>.</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          <div class="bg-blue-50 rounded-xl shadow p-6 text-center group hover:scale-105 hover:shadow-2xl hover:bg-white transition-all duration-300 animate-fadeInCard border border-blue-200/60" onclick="window.location.href='pantau_diskusi.html'">
+          <div class="bg-blue-50 rounded-xl shadow p-6 text-center group hover:scale-105 hover:shadow-2xl hover:bg-white transition-all duration-300 animate-fadeInCard border border-blue-200/60" onclick="window.location.href='pantau_diskusi.php'">
             <div class="text-4xl mb-2 transition-transform duration-300 group-hover:scale-110">📢</div>
             <div class="mb-1 text-blue-600 font-bold text-lg group-hover:text-blue-800 transition-colors duration-300">Pantau Diskusi</div>
             <div class="text-gray-700 group-hover:text-blue-900 transition-colors duration-300">Lihat dan pantau aktivitas diskusi mahasiswa secara real-time.</div>
           </div>
-          <div class="bg-blue-50 rounded-xl shadow p-6 text-center group hover:scale-105 hover:shadow-2xl hover:bg-white transition-all duration-300 animate-fadeInCard border border-blue-200/60" style="animation-delay:0.1s;" onclick="window.location.href='laporan_dosen.html'">
+          <div class="bg-blue-50 rounded-xl shadow p-6 text-center group hover:scale-105 hover:shadow-2xl hover:bg-white transition-all duration-300 animate-fadeInCard border border-blue-200/60" style="animation-delay:0.1s;" onclick="window.location.href='laporan_dosen.php'">
             <div class="text-4xl mb-2 transition-transform duration-300 group-hover:scale-110">📋</div>
             <div class="mb-1 text-blue-600 font-bold text-lg group-hover:text-blue-800 transition-colors duration-300">Laporan Refleksi</div>
             <div class="text-gray-700 group-hover:text-blue-900 transition-colors duration-300">Akses laporan refleksi emosi mahasiswa dan analisis emosi.</div>
-          </div>
-          <div class="bg-blue-50 rounded-xl shadow p-6 text-center group hover:scale-105 hover:shadow-2xl hover:bg-white transition-all duration-300 animate-fadeInCard border border-blue-200/60" style="animation-delay:0.2s;" onclick="window.location.href='tim.html'">
-            <div class="text-4xl mb-2 transition-transform duration-300 group-hover:scale-110">👥</div>
-            <div class="mb-1 text-blue-600 font-bold text-lg group-hover:text-blue-800 transition-colors duration-300">Kelola Tim</div>
-            <div class="text-gray-700 group-hover:text-blue-900 transition-colors duration-300">Kelola anggota tim, room, dan pengaturan diskusi.</div>
           </div>
           <div class="bg-blue-50 rounded-xl shadow p-6 text-center group hover:scale-105 hover:shadow-2xl hover:bg-white transition-all duration-300 animate-fadeInCard border border-blue-200/60" style="animation-delay:0.3s;" onclick="window.location.href='api/logout.php'">
             <div class="text-4xl mb-2 transition-transform duration-300 group-hover:scale-110">🔓</div>
